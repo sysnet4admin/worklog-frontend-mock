@@ -1,14 +1,19 @@
 pipeline {
     agent any
     stages {
-        stage('Say Hello') {
+        stage('Run Test') {
             steps {
-                echo "Hello, Jenkins Pipeline!"
+                echo "Let's run a test"
             }
         }
-        stage('Show Workspace') {
+        stage('Build Image') {
             steps {
-                sh 'ls -la'
+                echo "Let's build the image"
+            }
+        }
+        stage('Deploy Image') {
+            steps {
+                echo "Let's deploy the image"
             }
         }
     }
