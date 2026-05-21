@@ -7,7 +7,7 @@ on:
       - 'deploy_manifest/**'
 
 env:
-  DOCKER_REPOSITORY: sysnet4admin/worklog-frontend
+  DOCKER_REPOSITORY: sysnet4admin/worklog-frontend-mock
 
 jobs:
   build:
@@ -41,7 +41,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Update manifest and push
         run: |
-          sed -i "s|image: .*worklog-frontend:.*|image: ${{ env.DOCKER_REPOSITORY }}:${{ needs.build.outputs.short_sha }}|" deploy_manifest/worklog-frontend.yaml
+          sed -i "s|image: .*worklog-frontend-mock:.*|image: ${{ env.DOCKER_REPOSITORY }}:${{ needs.build.outputs.short_sha }}|" deploy_manifest/worklog-frontend.yaml
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add deploy_manifest/
