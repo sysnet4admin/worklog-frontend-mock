@@ -17,8 +17,8 @@ pipeline {
             steps {
                 sh """
                     docker run --privileged --rm tonistiigi/binfmt --install all 2>/dev/null || true
-                    docker buildx rm mybuilder 2>/dev/null || true
-                    docker buildx create --name mybuilder --driver docker-container --use
+                    docker buildx rm frontend-builder 2>/dev/null || true
+                    docker buildx create --name frontend-builder --driver docker-container --use
                     docker login -u ${DOCKERHUB_CREDENTIALS_USR} -p ${DOCKERHUB_CREDENTIALS_PSW}
                     docker buildx build \\
                         --platform linux/amd64,linux/arm64 \\
