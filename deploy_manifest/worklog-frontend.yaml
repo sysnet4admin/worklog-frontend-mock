@@ -16,7 +16,7 @@ spec:
       - name: dockerhub-creds
       containers:
         - name: worklog-frontend
-          image: sysnet4admin/worklog-frontend-mock:94ac930d
+          image: sysnet4admin/worklog-frontend-mock:9af94852
           ports:
             - containerPort: 5173
           env:
