@@ -4,7 +4,7 @@ COPY . /app
 WORKDIR /app
 
 RUN set -x \
-    && yarn install --network-timeout 600000
+    && yarn install --network-timeout 360000
 
 ENV VITE_API_URL="http://localhost:8000"
 ENTRYPOINT ["yarn"]
