@@ -7,3 +7,4 @@
 <!-- run-07 ch7.8 frontend fullstack: 20260531-122241 -->
 
 <!-- run-08 ch4: 144707 -->
+# run-08 ch7.8 verify
