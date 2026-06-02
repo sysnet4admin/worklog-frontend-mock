@@ -6,6 +6,9 @@ import { TanStackRouterVite } from "@tanstack/router-vite-plugin";
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   return {
-    plugins: [react(), tsconfigPaths(), TanStackRouterVite()]
+    plugins: [react(), tsconfigPaths(), TanStackRouterVite()],
+    server: {
+      allowedHosts: [".myk8s.local"]
+    }
   };
 });
