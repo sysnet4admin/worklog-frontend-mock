@@ -1,0 +1,41 @@
+workflow:
+  rules:
+    - if: '$CI_COMMIT_MESSAGE =~ /\[skip ci\]/'
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
+
+stages:
+  - build
+  - deploy
+
+variables:
+  DOCKER_REPOSITORY: worklog-frontend-mock
+
+build:
+  stage: build
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script:
+    - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  script:
+    - SHORT_SHA=$(echo $CI_COMMIT_SHA | cut -c1-8)
+    - docker buildx create --use --name builder
+    - docker buildx build --platform linux/amd64,linux/arm64
+        -t $DOCKERHUB_USERNAME/$DOCKER_REPOSITORY:$SHORT_SHA
+        --push .
+
+deploy:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache git
+  script:
+    - SHORT_SHA=$(echo $CI_COMMIT_SHA | cut -c1-8)
+    - git config user.name "gitlab-ci"
+    - git config user.email "ci@gitlab.com"
+    - git remote set-url origin "https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    - 'sed -i "s|image: .*/worklog-frontend-mock:.*|image: $DOCKERHUB_USERNAME/$DOCKER_REPOSITORY:$SHORT_SHA|" deploy_manifest/worklog-frontend.yaml'
+    - git add deploy_manifest/
+    - 'git diff --staged --quiet || git commit -m "deploy: update frontend image to $SHORT_SHA [skip ci]"'
+    - git push origin HEAD:main
