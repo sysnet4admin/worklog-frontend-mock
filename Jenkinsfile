@@ -1,5 +1,6 @@
 pipeline {
-    agent { label 'jenkins-jenkins-agent' }
+    agent any
+    tools { dockerTool 'docker' }
 
     environment {
         DOCKER_REPOSITORY = 'worklog-frontend-mock'
