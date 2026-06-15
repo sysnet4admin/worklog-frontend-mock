@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'jenkins-jenkins-agent' }
 
     environment {
         DOCKER_REPOSITORY = 'worklog-frontend-mock'
