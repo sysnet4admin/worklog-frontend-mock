@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    // 컨트롤러에는 docker가 없으므로 docker.sock을 가진 k8s 에이전트(JCasC kubernetes cloud)에서 실행.
+    // agent any면 컨트롤러 실행기(numExecutors: 2)로 갈 수 있고 그때 'docker: not found'로 실패한다(run-38 7.9).
+    agent { label 'jenkins-jenkins-agent' }
 
     environment {
         DOCKER_REPOSITORY = 'worklog-frontend-mock'
