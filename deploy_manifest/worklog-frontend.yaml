@@ -1,0 +1,76 @@
+# worklog-frontend-mock 배포 매니페스트 (Deployment + Service + HTTPRoute)
+# backend는 worklog-backend.yaml(단계 2)의 Service를 클러스터 내부 주소로 호출합니다.
+# 이미지 pull에 쓰는 Secret dockerhub-creds는 클러스터에 미리 만들어 둬야 합니다.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worklog-frontend
+  labels:
+    app: worklog-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worklog-frontend
+  template:
+    metadata:
+      labels:
+        app: worklog-frontend
+    spec:
+      imagePullSecrets:
+        - name: dockerhub-creds
+      containers:
+        - name: worklog-frontend
+          image: sysnet4admin/worklog-frontend-mock:buildtest2
+          ports:
+            - name: http
+              containerPort: 5173
+          env:
+            - name: VITE_API_URL
+              value: http://worklog-backend.default.svc.cluster.local:80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5173
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5173
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: worklog-frontend
+  labels:
+    app: worklog-frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: worklog-frontend
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 5173
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: worklog-frontend
+spec:
+  parentRefs:
+    - name: nginx-gateway
+  hostnames:
+    - worklog-frontend.myk8s.local
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: worklog-frontend
+          port: 8080
